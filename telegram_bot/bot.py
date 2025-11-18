@@ -28,12 +28,41 @@ class TelegramBot:
         response = requests.get(url, params=params)
         return response.json()
 
-    def send_message(self, chat_id, text):
-        url = f"{self.base_url}/sendMessage"
-        params = {'chat_id': chat_id, 'text': text}
-        response = requests.get(url, params=params)
-        return response.json()
+    def split_message(self, text: str, max_length: int = 4096) -> list:
+        lines = text.split("\n")
+        current_message = ""
+        messages = []
 
+        for line in lines:
+            if len(current_message) + len(line) + 1 <= max_length:
+                current_message += ("\n" + line) if current_message else line
+            else:
+                messages.append(current_message)
+                current_message = line
+
+        if current_message:
+            messages.append(current_message)
+
+        return messages
+
+    def send_message(self, chat_id, text):
+        # split if len(text) >= 4096
+        messages = self.split_message(text)
+
+        for chunk in messages:
+            url = f"{self.base_url}/sendMessage"
+            params = {'chat_id': chat_id, 'text': chunk}
+            response = requests.get(url, params=params)
+
+            result: dict = response.json()
+            if result.get("ok"):
+                print(f"Message part sent successfully to chat_id {chat_id}.")
+            else:
+                error_description = result.get("description", "No error description provided.")
+                print(f"Error sending message part to chat_id {chat_id}: {error_description}")
+            
+            time.sleep(self.limit)
+            
     def process_received_messages(self, updates):
         for update in updates['result']:
             chat_id = update['message']['chat']['id']
@@ -51,16 +80,21 @@ class TelegramBot:
             result = self.user_manager.get_user(chat_id=chat_id)
             self.send_message(chat_id, f"{user.id}: UPDATED. {result.flags}")
 
+
     def send_broadcast(self, data: str, last_data: str="", all=False):
         users = self.user_manager.get_all_users()
-        print(f"{users}\n\n")
-
         if all:
             for user in users:
+                if not data:
+                    print(data, type(data))
+
                 self.send_message(user.chat_id, data)
+
                 time.sleep(self.limit)
         else:
             for user in users:
+                print(f"User chat_id: {user.chat_id}, flags: {user.flags}")
+
                 if user.flags.startswith("1"):
 
                     diff_result: dict = diff_to_dict(first=data, second=last_data)
