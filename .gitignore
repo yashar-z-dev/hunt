@@ -1,0 +1,8 @@
+token.txt
+*.db
+venv/
+*.pyc
+__pycache__/
+*.log
+sql_cli.py
+instance/
