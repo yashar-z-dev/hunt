@@ -25,7 +25,6 @@ def diff_to_dict(first: str, second: str) -> dict:
     return result
 
 def build_message_custom(user_data: str, message: dict) -> str:
-    key = user_data[0] == "1"
     removed = user_data[1] == "1"
     added = user_data[2] == "1"
     common = user_data[3] == "1"
@@ -41,10 +40,13 @@ def build_message_custom(user_data: str, message: dict) -> str:
 
     output_lines = []
     for key in ["removed", "added", "common"]:
-        if key == 1:
+        if key:
             icon = mapping[key]["icon"]
             label = mapping[key]["label"]
             output_lines.append(f"{icon} {label}:")
             output_lines.append(message[key])
 
-    return "\n".join(output_lines)
+    if output_lines:
+        return "\n".join(output_lines)
+    else:
+        "__EMPTY__"
