@@ -29,7 +29,7 @@ def main():
         if not last_data:
             last_data = ""
 
-        bot.send_broadcast(message=data, 
+        bot.send_broadcast(data=data, 
                            last_data=last_data, 
                            all=False)
         time.sleep(bot.delay)
