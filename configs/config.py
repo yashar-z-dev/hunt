@@ -7,10 +7,9 @@ class Config:
         self.DB_FILE: str = os.path.join(self.project_root, "..", "instance", "database.db")
         self.SECRET_FILE: str = os.path.join(self.project_root, "..", "instance", "secret.txt")
 
-        self.BASE_URL: str = self.get_baseurl()
-
         self.TOKEN: str = self.loader(self.TOKEN_FILE).strip()
         self.SECRET: str = self.loader(self.SECRET_FILE).strip()
+        self.BASE_URL: str = self.get_baseurl()
         self.DELAY: float = 5
         self.TIMEOUT: float = 1
         self.LIMIT: float = 0.5

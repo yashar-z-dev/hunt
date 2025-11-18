@@ -14,27 +14,27 @@ def ex(debug: bool,
     results = extractor.extract()
 
     if isinstance(results, dict) and "error" in results:
-        # اگر خطا بود
-        print(json.dumps(results, indent=2, ensure_ascii=False))
-        
+        return json.dumps(results, indent=2, ensure_ascii=False)
     else:
         field_names = list(CONFIG["fields"].keys())
-
+        output = []
         if not debug:
-            # خروجی تمیز برای pipeline (CSV-like)
+            # pipeline (CSV-like)
             for p in results:
                 values = [str(p.get(field, "")) for field in field_names]
-                print(",".join(values))
+                output.append(",".join(values))
         else:
             # خروجی انسان‌خوان برای دیباگ
-            print("\n==========================")
-            print(f"[📦] Finished! Total programs collected: {len(results)}")
-            print("==========================\n")
+            output.append("\n==========================")
+            output.append(f"[📦] Finished! Total programs collected: {len(results)}")
+            output.append("==========================\n")
             for idx, p in enumerate(results, 1):
                 values = [f"{field}: {p.get(field, '')}" for field in field_names]
-                print(f"{idx:02d}. " + " — ".join(values))
-
-    return "ERROR"
+                output.append(f"{idx:02d}. " + " — ".join(values))
+    if output:
+        return "".join(output)
+    else:
+        return "ERROR finaly"
 
 #############################################################
 
