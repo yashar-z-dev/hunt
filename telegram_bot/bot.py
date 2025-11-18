@@ -7,7 +7,11 @@ import requests
 class TelegramBot:
     """کلاس اصلی ربات تلگرام که وظیفه پردازش پیام‌ها و ارسال‌ها را دارد"""
 
-    def __init__(self, config: Config, user_manager: UserManager, settings_manager: SettingsManager):
+    def __init__(self, 
+                 config: Config, 
+                 user_manager: UserManager, 
+                 settings_manager: SettingsManager):
+
         self.token = config.TOKEN
         self.base_url = config.BASE_URL
         self.timeout = config.TIMEOUT

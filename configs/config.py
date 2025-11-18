@@ -3,10 +3,10 @@ import os
 class Config:
     def __init__(self):
         self.project_root = os.path.dirname(os.path.abspath(__file__))
-        self.TOKEN_FILE: str = os.path.join(self.project_root, "instance", "token.txt")
+        self.TOKEN_FILE: str = os.path.join(self.project_root, "..", "instance", "token.txt")
         self.TOKEN: str = self.get_token()
         self.BASE_URL: str = self.get_baseurl()
-        self.DB_FILE: str = os.path.join(self.project_root, "instance", "database.db")
+        self.DB_FILE: str = os.path.join(self.project_root, "..", "instance", "database.db")
 
         self.DELAY: float = 5
         self.TIMEOUT: float = 1

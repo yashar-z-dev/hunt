@@ -43,13 +43,18 @@ def main():
     from configs.config import Config
     from telegram_bot.bot import UserManager
     from telegram_bot.bot import TelegramBot
+    from models.settings import SettingsManager
+    from models.db import DatabaseManager
     config = Config()
     
     # ایجاد نمونه از کلاس UserManager
-    user_manager = UserManager(config.DB_FILE)
-    
+    db_manager = DatabaseManager(config.DB_FILE)
+    user_manager = UserManager(db_manager=db_manager)
+    settings_manager = SettingsManager(db_manager=db_manager)
     # ایجاد نمونه از کلاس TelegramBot
-    bot = TelegramBot(config=config, user_manager=user_manager)
+    bot = TelegramBot(config=config, 
+                      user_manager=user_manager, 
+                      settings_manager=settings_manager)
 
     """حلقه اصلی ربات برای اجرای منظم"""
     offset = bot.settings_manager.get_offset() # دریافت offset از دیتابیس
