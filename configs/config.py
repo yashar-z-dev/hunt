@@ -10,9 +10,9 @@ class Config:
         self.TOKEN: str = self.loader(self.TOKEN_FILE).strip()
         self.SECRET: str = self.loader(self.SECRET_FILE).strip()
         self.BASE_URL: str = self.get_baseurl()
-        self.DELAY: float = 5
-        self.TIMEOUT: float = 1
-        self.LIMIT: float = 0.5
+        self.DELAY: float = 5 # main loop DELAY
+        self.TIMEOUT: float = 1 # wait for recive message
+        self.LIMIT: float = 2 # telegram limit every minute we can send 30 message
 
         self.make_dirctorys()
 

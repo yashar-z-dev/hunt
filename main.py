@@ -30,7 +30,7 @@ def main():
 
         bot.send_broadcast(data=data, 
                            last_data=last_data, 
-                           all=True)
+                           all=False)
         time.sleep(bot.delay)
 
 if __name__ == "__main__":

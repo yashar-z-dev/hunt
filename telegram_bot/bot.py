@@ -45,7 +45,7 @@ class TelegramBot:
 
         return messages
 
-    def send_message(self, chat_id, text):
+    def send_message(self, chat_id: int, text: str):
         # split if len(text) >= 4096
         messages = self.split_message(text)
 
@@ -85,9 +85,6 @@ class TelegramBot:
         users = self.user_manager.get_all_users()
         if all:
             for user in users:
-                if not data:
-                    print(data, type(data))
-
                 self.send_message(user.chat_id, data)
 
                 time.sleep(self.limit)
