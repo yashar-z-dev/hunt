@@ -1,3 +1,4 @@
+from typing import Optional
 import time
 from configs.config import Config
 from models.db import DatabaseManager
@@ -18,16 +19,14 @@ def main():
                       settings_manager=settings_manager)
 
     """main loop"""
-    offset = bot.settings_manager.get_offset() # get offset as db
-    last_data = ""
+    offset: Optional[int] = bot.settings_manager.get_offset() # get offset as db
+    last_data: str = ""
     while True:
         offset = bot.run_message_processor(offset)
 
         data: str = get_extracet(debug=True, all=True)
         information_manager.add_information(data)
-        last_data = information_manager.get_last_information(1)
-        if not last_data:
-            last_data = ""
+        last_data = information_manager.get_last_information(1)[0][2]
 
         bot.send_broadcast(data=data, 
                            last_data=last_data, 

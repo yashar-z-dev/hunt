@@ -112,7 +112,7 @@ def select_data(command):
         paginate_and_display(truncated_rows, truncated_headers)
 
         if hidden_headers:
-            print(f"\n⚠️ Hidden columns: {", ".join(hidden_headers)}")
+            print(f"\n⚠️ Hidden columns: {', '.join(hidden_headers)}")
             print("📝 Tip: Use SELECT col1, col2, ... to display them.")
 
         # Wrning
