@@ -30,7 +30,7 @@ def build_message_custom(user_data: str, message: dict) -> str:
     added = user_data[2] == "1"
     common = user_data[3] == "1"
 
-    if removed and added and common:
+    if not removed and not added and not common:
         return "hidden"
 
     mapping = {

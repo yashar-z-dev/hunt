@@ -83,13 +83,22 @@ class TelegramBot:
     def auth(self, chat_id: int, flags: str, text: str):
         if not text:
             return "DEBUG, __EMPTY__"
-        if text==self.secret:
-            self.user_manager.update_flags(chat_id=chat_id, new_flags="1111")
+        
+        updated_flags = list(flags)
+        if text == self.secret:
+            updated_flags = ['1', '1', '1', '1']
+
         elif text.startswith("removed"):
-            self.user_manager.update_flags(chat_id=chat_id, new_flags="1100")
+            updated_flags[1] = '1' if updated_flags[1] == '0' else '0'
+
         elif text.startswith("added"):
-            self.user_manager.update_flags(chat_id=chat_id, new_flags="1010")
+            updated_flags[2] = '1' if updated_flags[2] == '0' else '0'
+
         elif text.startswith("common"):
-            self.user_manager.update_flags(chat_id=chat_id, new_flags="1001")
-        elif text.startswith("both"):
-            self.user_manager.update_flags(chat_id=chat_id, new_flags="1110")
+            updated_flags[3] = '1' if updated_flags[3] == '0' else '0'
+
+        new_flags = ''.join(updated_flags)
+        
+        self.user_manager.update_flags(chat_id=chat_id, new_flags=new_flags)
+
+        return f"Flags updated to {new_flags}"
