@@ -53,6 +53,8 @@ class TelegramBot:
 
     def send_broadcast(self, data: str, last_data: str="", all=False):
         users = self.user_manager.get_all_users()
+        print(f"{users}\n\n")
+
         if all:
             for user in users:
                 self.send_message(user.chat_id, data)
