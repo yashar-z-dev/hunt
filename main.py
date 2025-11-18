@@ -39,6 +39,7 @@ def ex():
 #############################################################
 
 def main():
+    import time
     from configs.config import Config
     from telegram_bot.bot import UserManager
     from telegram_bot.bot import TelegramBot
@@ -48,10 +49,15 @@ def main():
     user_manager = UserManager(config.DB_FILE)
     
     # ایجاد نمونه از کلاس TelegramBot
-    bot = TelegramBot(config, user_manager)
-    
-    # اجرای حلقه اصلی ربات
-    bot.main_loop()
+    bot = TelegramBot(config=config, user_manager=user_manager)
+
+    """حلقه اصلی ربات برای اجرای منظم"""
+    offset = bot.settings_manager.get_offset() # دریافت offset از دیتابیس
+    while True:
+        # اجرای پردازش پیام‌ها و به روز رسانی offset
+        offset = bot.run_message_processor(offset)
+        bot.run_broadcast_scheduler()
+        time.sleep(bot.delay)
 
 if __name__ == "__main__":
     main()
