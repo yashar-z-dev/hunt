@@ -1,27 +1,26 @@
 # ==============================
 # Example Usage
 # ==============================
-def ex():
-    import argparse
+def ex(debug: bool, 
+       all: bool) -> str:
     import json
     from extract_data.main_extractor import DataExtractor, CONFIG
 
-    parser = argparse.ArgumentParser(description="Fetch YesWeHack programs via API/Browser")
-    parser.add_argument("-d", "--debug", action="store_true", help="Print detailed logs")
-    parser.add_argument("-a", "--all", action="store_true", help="Include archived/disabled/private programs too")
-    args = parser.parse_args()
+    # parser.add_argument("-d", "--debug", action="store_true", help="Print detailed logs")
+    # parser.add_argument("-a", "--all", action="store_true", help="Include archived/disabled/private programs too")
 
     # ساخت نمونه از کلاس با پارامتر include_all
-    extractor = DataExtractor(config=CONFIG, include_all=args.all)
+    extractor = DataExtractor(config=CONFIG, include_all=all)
     results = extractor.extract()
 
     if isinstance(results, dict) and "error" in results:
         # اگر خطا بود
         print(json.dumps(results, indent=2, ensure_ascii=False))
+        
     else:
         field_names = list(CONFIG["fields"].keys())
 
-        if not args.debug:
+        if not debug:
             # خروجی تمیز برای pipeline (CSV-like)
             for p in results:
                 values = [str(p.get(field, "")) for field in field_names]
@@ -35,6 +34,7 @@ def ex():
                 values = [f"{field}: {p.get(field, '')}" for field in field_names]
                 print(f"{idx:02d}. " + " — ".join(values))
 
+    return "ERROR"
 
 #############################################################
 
@@ -45,8 +45,9 @@ def main():
     from telegram_bot.bot import TelegramBot
     from models.settings import SettingsManager
     from models.db import DatabaseManager
+
     config = Config()
-    
+    yeswehack: str = ex(debug=True, all=True)
     # ایجاد نمونه از کلاس UserManager
     db_manager = DatabaseManager(config.DB_FILE)
     user_manager = UserManager(db_manager=db_manager)
@@ -61,7 +62,7 @@ def main():
     while True:
         # اجرای پردازش پیام‌ها و به روز رسانی offset
         offset = bot.run_message_processor(offset)
-        bot.send_broadcast(message="این یک پیام برادکست است.", all=False)
+        bot.send_broadcast(message=yeswehack, all=False)
         time.sleep(bot.delay)
 
 if __name__ == "__main__":

@@ -13,6 +13,7 @@ class TelegramBot:
                  settings_manager: SettingsManager):
 
         self.token = config.TOKEN
+        self.secret = config.SECRET
         self.base_url = config.BASE_URL
         self.timeout = config.TIMEOUT
         self.delay = config.DELAY
@@ -48,8 +49,9 @@ class TelegramBot:
                 self.send_message(chat_id, f"برای استفاده از این ربات باید اشتراک تهیه نمایید.\n{text}")
                 return
 
-            result = self.auth(chat_id=user.chat_id, flags=user.flags, text=text)
-            self.send_message(chat_id, f"{user.id}: UPDATED. {result}")
+            self.auth(chat_id=user.chat_id, flags=user.flags, text=text)
+            result = self.user_manager.get_user(chat_id=chat_id)
+            self.send_message(chat_id, f"{user.id}: UPDATED. {result.flags}")
 
     def send_broadcast(self, message: str, all=False):
         """ارسال پیام برودکست به تمام کاربران موجود در دیتابیس"""
@@ -81,12 +83,9 @@ class TelegramBot:
         return offset
 
     def auth(self, chat_id: int, flags: str, text: str):
-        print(f"[DEBUG]: {text}, :{flags}")
-        set_flags = ""
         if not text:
             return "DEBUG, __EMPTY__"
         if text=="1234567890":
-            set_flags = "1111"
             self.user_manager.update_flags(chat_id=chat_id, new_flags="1111")
         elif text.startswith("removed"):
             self.user_manager.update_flags(chat_id=chat_id, new_flags="1100")
@@ -96,6 +95,3 @@ class TelegramBot:
             self.user_manager.update_flags(chat_id=chat_id, new_flags="1001")
         elif text.startswith("both"):
             self.user_manager.update_flags(chat_id=chat_id, new_flags="1110")
-        if not set_flags:
-            set_flags = "0000"
-        return f"DEBUG, UPDATED, {set_flags}"
