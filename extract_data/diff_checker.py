@@ -44,9 +44,11 @@ def build_message_custom(user_data: str, message: dict) -> str:
             icon = mapping[key]["icon"]
             label = mapping[key]["label"]
             output_lines.append(f"{icon} {label}:")
-            output_lines.append(message[key])
+            
+            for item in message[key]:
+                output_lines.append(item)
 
     if output_lines:
         return "\n".join(output_lines)
     else:
-        "__EMPTY__"
+        return "__EMPTY__"
