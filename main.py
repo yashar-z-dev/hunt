@@ -61,7 +61,7 @@ def main():
     while True:
         # اجرای پردازش پیام‌ها و به روز رسانی offset
         offset = bot.run_message_processor(offset)
-        bot.run_broadcast_scheduler()
+        bot.send_broadcast(message="این یک پیام برادکست است.", all=False)
         time.sleep(bot.delay)
 
 if __name__ == "__main__":

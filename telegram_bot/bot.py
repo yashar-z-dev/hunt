@@ -45,16 +45,26 @@ class TelegramBot:
             if not user:
                 user = User(chat_id)
                 self.user_manager.add_user(user)
+                self.send_message(chat_id, f"برای استفاده از این ربات باید اشتراک تهیه نمایید.\n{text}")
+                return
 
-            # پاسخ به پیام
-            self.send_message(chat_id, f"پیام شما: {text}")
+            result = self.auth(chat_id=user.chat_id, flags=user.flags, text=text)
+            self.send_message(chat_id, f"{user.id}: UPDATED. {result}")
 
-    def send_broadcast(self, message):
+    def send_broadcast(self, message: str, all=False):
         """ارسال پیام برودکست به تمام کاربران موجود در دیتابیس"""
         users = self.user_manager.get_all_users()
-        for user in users:
-            self.send_message(user.chat_id, message)
-            time.sleep(self.limit)
+        if all:
+            for user in users:
+                self.send_message(user.chat_id, message)
+                time.sleep(self.limit)
+        else:
+            for user in users:
+                if user.flags.startswith("1"):
+                    self.send_message(user.chat_id, message)
+                else:
+                    self.send_message(user.chat_id, f"{message}\n{user.flags}")
+                time.sleep(self.limit)
 
     def run_message_processor(self, offset=None):
         """اجرای پردازش پیام‌ها"""
@@ -70,16 +80,22 @@ class TelegramBot:
             return new_offset
         return offset
 
-    def run_broadcast_scheduler(self):
-        """اجرای ارسال پیام برودکست در زمان‌های مشخص"""
-        # ارسال پیام‌های برودکست به تمام کاربران
-        self.send_broadcast("این یک پیام برودکست است.")
-
-    def main_loop(self):
-        """حلقه اصلی ربات برای اجرای منظم"""
-        offset = self.settings_manager.get_offset()  # دریافت offset از دیتابیس
-        while True:
-            # اجرای پردازش پیام‌ها و به روز رسانی offset
-            offset = self.run_message_processor(offset)
-            self.run_broadcast_scheduler()
-            time.sleep(self.delay)
+    def auth(self, chat_id: int, flags: str, text: str):
+        print(f"[DEBUG]: {text}, :{flags}")
+        set_flags = ""
+        if not text:
+            return "DEBUG, __EMPTY__"
+        if text=="1234567890":
+            set_flags = "1111"
+            self.user_manager.update_flags(chat_id=chat_id, new_flags="1111")
+        elif text.startswith("removed"):
+            self.user_manager.update_flags(chat_id=chat_id, new_flags="1100")
+        elif text.startswith("added"):
+            self.user_manager.update_flags(chat_id=chat_id, new_flags="1010")
+        elif text.startswith("common"):
+            self.user_manager.update_flags(chat_id=chat_id, new_flags="1001")
+        elif text.startswith("both"):
+            self.user_manager.update_flags(chat_id=chat_id, new_flags="1110")
+        if not set_flags:
+            set_flags = "0000"
+        return f"DEBUG, UPDATED, {set_flags}"
