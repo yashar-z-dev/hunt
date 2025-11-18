@@ -2,22 +2,21 @@ import sqlite3
 from typing import Tuple
 
 class DatabaseManager:
-    """مدیریت عملیات دیتابیس SQLite"""
-
+    """manage SQLite DB"""
     def __init__(self, db_file: str):
         self.db_file = db_file
         self._create_tables()
 
     def _connect(self):
-        """اتصال به دیتابیس"""
+        """Connect to DB"""
         return sqlite3.connect(self.db_file)
 
     def _create_tables(self):
-        """ایجاد جدول‌ها در دیتابیس"""
+        """Create TABLES"""
         conn = self._connect()
         cursor = conn.cursor()
 
-        # ایجاد جدول کاربران
+        # Users TABLE
         cursor.execute('''
             CREATE TABLE IF NOT EXISTS users (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -27,7 +26,7 @@ class DatabaseManager:
             )
         ''')
 
-        # ایجاد جدول تنظیمات برای ذخیره offset
+        # Settings TABLE
         cursor.execute('''
             CREATE TABLE IF NOT EXISTS settings (
                 key TEXT PRIMARY KEY,
@@ -35,7 +34,7 @@ class DatabaseManager:
             )
         ''')
 
-        # ایجاد جدول اطلاعات (informations)
+        # informations TABLE
         cursor.execute('''
             CREATE TABLE IF NOT EXISTS informations (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -48,7 +47,7 @@ class DatabaseManager:
         conn.close()
 
     def execute(self, query: str, params: Tuple = ()):
-        """اجرای یک query دیتابیس"""
+        """Run once query in DB"""
         conn = self._connect()
         cursor = conn.cursor()
         cursor.execute(query, params)
@@ -56,7 +55,7 @@ class DatabaseManager:
         conn.close()
 
     def fetch_all(self, query: str, params: Tuple = ()):
-        """دریافت تمام داده‌ها از یک query"""
+        """get all data as once query"""
         conn = self._connect()
         cursor = conn.cursor()
         cursor.execute(query, params)
@@ -65,7 +64,7 @@ class DatabaseManager:
         return results
 
     def fetch_one(self, query: str, params: Tuple = ()):
-        """دریافت یک ردیف از دیتابیس"""
+        """get once line"""
         conn = self._connect()
         cursor = conn.cursor()
         cursor.execute(query, params)

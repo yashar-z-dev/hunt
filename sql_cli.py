@@ -5,12 +5,12 @@ import shutil
 import textwrap
 from tabulate import tabulate
 
-# مسیر دیتابیس
+# database path
 DB_PATH = os.path.join(os.path.dirname(__file__), 'instance', 'database.db')
 conn = sqlite3.connect(DB_PATH)
 cursor = conn.cursor()
 
-# تابع‌های کمکی
+# utils functions
 def wrap_text(text, width=40):
     if isinstance(text, str):
         return '\n'.join(textwrap.wrap(text, width=width))
@@ -48,7 +48,7 @@ def paginate_and_display(rows, headers, rows_per_page=30, maxcolwidths=None):
         print("⚠️ No rows to display.")
         return
 
-    # اعمال wrap روی همه سلول‌ها
+    # wrap on all row
     wrapped_rows = []
     for row in rows:
         wrapped_row = [wrap_text(cell) for cell in row]
@@ -100,13 +100,12 @@ def select_data(command):
         rows = cursor.fetchall()
         headers = [desc[0] for desc in cursor.description]
 
-        # اگر جدول خالی بود
         if not rows:
             print(tabulate([], headers=headers, tablefmt="fancy_grid", stralign="center"))
             print("\nQuery OK, 0 rows returned.")
             return
 
-        # بررسی تعداد ستون‌ها
+        # check columns
         max_cols = 7
         show_warning = len(headers) > max_cols
         truncated_rows, truncated_headers, hidden_headers = truncate_columns(rows, headers, max_cols=max_cols)
@@ -116,7 +115,7 @@ def select_data(command):
             print(f"\n⚠️ Hidden columns: {", ".join(hidden_headers)}")
             print("📝 Tip: Use SELECT col1, col2, ... to display them.")
 
-        # پیام هشدار
+        # Wrning
         if show_warning:
             print(f"⚠️ Output truncated: Showing {max_cols} columns of {len(headers)}.")
             print("📝 Tip: Use SELECT col1, col2, ... for full column view.")

@@ -24,10 +24,10 @@ def fetch_from_api(config, page=1):
         except Exception as e:
             error_msg = f"Unexpected error on page {page}, attempt {attempt}: {e}"
 
-        # اگر هنوز فرصت retry داریم
+        # retry
         if attempt < config["max_retries"]:
             time.sleep(backoff)
-            backoff *= 2  # backoff تصاعدی
+            backoff *= 2  # backoff
         else:
             return {
                 "error": "API fetch failed",

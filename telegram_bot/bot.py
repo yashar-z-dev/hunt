@@ -4,9 +4,10 @@ from models.users import UserManager, User
 from models.settings import SettingsManager
 import requests
 
-class TelegramBot:
-    """کلاس اصلی ربات تلگرام که وظیفه پردازش پیام‌ها و ارسال‌ها را دارد"""
+from extract_data.diff_checker import diff_to_dict, build_message_custom
 
+class TelegramBot:
+    """BOT manager"""
     def __init__(self, 
                  config: Config, 
                  user_manager: UserManager, 
@@ -22,62 +23,59 @@ class TelegramBot:
         self.settings_manager = settings_manager
 
     def get_updates(self, offset=None):
-        """دریافت پیام‌های جدید از تلگرام (با timeout کوتاه برای long polling)"""
         url = f"{self.base_url}/getUpdates"
         params = {'offset': offset, 'timeout': self.timeout}
         response = requests.get(url, params=params)
         return response.json()
 
     def send_message(self, chat_id, text):
-        """ارسال پیام به یک کاربر خاص"""
         url = f"{self.base_url}/sendMessage"
         params = {'chat_id': chat_id, 'text': text}
         response = requests.get(url, params=params)
         return response.json()
 
     def process_received_messages(self, updates):
-        """پردازش پیام‌های دریافتی از کاربران"""
         for update in updates['result']:
             chat_id = update['message']['chat']['id']
             text = update['message']['text']
 
-            # اضافه کردن کاربر جدید به دیتابیس (در صورت عدم وجود)
+            # add_user(user) if not user in DB
             user = self.user_manager.get_user(chat_id)
             if not user:
                 user = User(chat_id)
                 self.user_manager.add_user(user)
-                self.send_message(chat_id, f"برای استفاده از این ربات باید اشتراک تهیه نمایید.\n{text}")
+                self.send_message(chat_id, f"You must subscribe to use this robot.\n{text}")
                 return
 
             self.auth(chat_id=user.chat_id, flags=user.flags, text=text)
             result = self.user_manager.get_user(chat_id=chat_id)
             self.send_message(chat_id, f"{user.id}: UPDATED. {result.flags}")
 
-    def send_broadcast(self, message: str, all=False):
-        """ارسال پیام برودکست به تمام کاربران موجود در دیتابیس"""
+    def send_broadcast(self, data: str, last_data: str="", all=False):
         users = self.user_manager.get_all_users()
         if all:
             for user in users:
-                self.send_message(user.chat_id, message)
+                self.send_message(user.chat_id, data)
                 time.sleep(self.limit)
         else:
             for user in users:
                 if user.flags.startswith("1"):
+
+                    diff_result: dict = diff_to_dict(first=data, second=last_data)
+                    message = build_message_custom(user_data=user.flags, message=diff_result)
+
                     self.send_message(user.chat_id, message)
                 else:
-                    self.send_message(user.chat_id, f"{message}\n{user.flags}")
+                    self.send_message(user.chat_id, f"{data}\n{user.flags}")
                 time.sleep(self.limit)
 
     def run_message_processor(self, offset=None):
-        """اجرای پردازش پیام‌ها"""
         updates = self.get_updates(offset=offset)
         if updates['result']:
-            # پردازش پیام‌های دریافتی
             self.process_received_messages(updates)
-            
-            # برگرداندن آخرین update_id برای تنظیم offset
+            # return last update_id for set offset 
             new_offset = updates['result'][-1]['update_id'] + 1
-            self.settings_manager.set_offset(new_offset)  # ذخیره offset جدید
+            self.settings_manager.set_offset(new_offset)  # update new offset
             
             return new_offset
         return offset
@@ -85,7 +83,7 @@ class TelegramBot:
     def auth(self, chat_id: int, flags: str, text: str):
         if not text:
             return "DEBUG, __EMPTY__"
-        if text=="1234567890":
+        if text==self.secret:
             self.user_manager.update_flags(chat_id=chat_id, new_flags="1111")
         elif text.startswith("removed"):
             self.user_manager.update_flags(chat_id=chat_id, new_flags="1100")
