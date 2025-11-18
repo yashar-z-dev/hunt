@@ -99,7 +99,7 @@ class TelegramBot:
 
                     self.send_message(user.chat_id, message)
                 else:
-                    self.send_message(user.chat_id, f"{data}\n{user.flags}")
+                    self.send_message(user.chat_id, f"{len(data)}\n{user.flags}")
                 time.sleep(self.limit)
 
     def run_message_processor(self, offset=None):
