@@ -25,12 +25,32 @@ def diff_to_dict(first: str, second: str) -> dict:
 
     return result
 
-def truncate_by_space_regex(text: str, limit: int=25) -> str:
-    pattern = rf'^.{0,{limit}}(?=\s|$)'
-    match = re.search(pattern, text)
-    if match:
-        return match.group(0).strip()
-    return text[:limit]  # fallback
+def truncate(text: str, limit: int = 15) -> str:
+    """
+    Truncate text to the nearest break at or before `limit`.
+    A break is any non-letter (Unicode-aware) or any char in `extra_breaks`.
+    If no break exists in the window, hard-cut at `limit`.
+    """
+    if len(text) <= limit:
+        return text
+
+    last_break = -1
+    window = text[:limit]
+
+    def is_break(ch: str) -> bool:
+        return (not ch.isalpha())
+
+    for i, ch in enumerate(window):
+        if is_break(ch):
+            last_break = i
+
+    if last_break != -1:
+        result = window[:last_break + 1].rstrip()
+    else:
+        result = window
+
+    return result
+
 
 def build_message_custom(user_data: str, message: dict) -> str:
     output_lines = []
@@ -54,22 +74,13 @@ def build_message_custom(user_data: str, message: dict) -> str:
                 for data in message[item["key"]]:
                     match = re.match(r'^(.*?),', data)
                     if match:
-                        result = truncate_by_space_regex(text=match.group(1))
+                        print(match.group(1))
+                        result = truncate(text=match.group(1))
                     else:
-                        result = truncate_by_space_regex(text=f"ERR: {data}")
+                        result = truncate(text=f"ERR: {data}")
                     output_lines.append(result)
             
     if output_lines:
         return "\n".join(output_lines)
     else:
         return "__NOT_CHANGE__"
-
-if __name__ == "__main__":
-    flags = input(">> ")
-    with open("file_1", "r", encoding="utf-8") as f:
-        data_1 = f.read()
-    with open("file_2", "r", encoding="utf-8") as f:
-        data_2 = f.read()
-    result = diff_to_dict(first=data_1, second=data_2)
-    output = build_message_custom(user_data=flags, message=result)
-    print(output)
