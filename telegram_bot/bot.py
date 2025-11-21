@@ -22,6 +22,11 @@ class TelegramBot:
         self.user_manager = user_manager
         self.settings_manager = settings_manager
 
+        self.CMD = [
+            {"keywords": ["secret", "removed", "added", "common"], "method": self.auth},
+            {"keywords": ["new"], "method": self.handle_another_commands}
+            ]
+
     def get_updates(self, offset=None):
         url = f"{self.base_url}/getUpdates"
         params = {'offset': offset, 'timeout': self.timeout}
@@ -76,8 +81,7 @@ class TelegramBot:
                 self.send_message(chat_id, f"You must subscribe to use this robot.\n{text}")
                 return
 
-            self.auth(chat_id=user.chat_id, flags=user.flags, text=text)
-            result = self.user_manager.get_user(chat_id=chat_id)
+            result = self.dispatch(chat_id=user.chat_id, flags=user.flags, text=text)
             self.send_message(chat_id, f"{user.id}: UPDATED. {result.flags}")
 
 
@@ -113,12 +117,22 @@ class TelegramBot:
             return new_offset
         return offset
 
+    def dispatch(self, chat_id: int, flags: str, text: str):
+        for cmd in self.CMD:
+            if any(text.startswith(keyword) for keyword in cmd["keywords"]):
+                return cmd["method"](chat_id=chat_id, flags=flags, text=text)
+        return "❌ Unknown command"
+
+    def handle_another_commands(self, chat_id: int, flags: str, text: str):
+        """ ["new"] """
+        from main import BotRunner
+        bot = BotRunner()
+        bot.send_broadcast_if_due(force=True)
+
     def auth(self, chat_id: int, flags: str, text: str):
-        if not text:
-            return "DEBUG, __EMPTY__"
-        
+        """ ["secret", "removed", "added", "common"] """
         updated_flags = list(flags)
-        if text == self.secret:
+        if text == f"secret:{self.secret}":
             updated_flags = ['1', '1', '1', '1']
 
         elif text.startswith("removed"):

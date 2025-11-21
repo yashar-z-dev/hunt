@@ -10,7 +10,8 @@ class BotConfig:
         self.TOKEN: str = self.loader(self.TOKEN_FILE).strip()
         self.SECRET: str = self.loader(self.SECRET_FILE).strip()
         self.BASE_URL: str = self.get_baseurl()
-        self.DELAY: float = 5 # main loop DELAY
+        self.DELAY: float = 10 # main loop DELAY
+        self.broadcast_interval: float = 3600 # broadcast DELAY
         self.TIMEOUT: float = 1 # wait for recive message
         self.LIMIT: float = 2 # telegram limit every minute we can send 30 message
 
