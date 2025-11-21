@@ -93,12 +93,12 @@ class TelegramBot:
 
                 time.sleep(self.limit)
         else:
+            diff_result: dict = diff_to_dict(first=data, second=last_data) # Run only once
             for user in users:
                 print(f"User chat_id: {user.chat_id}, flags: {user.flags}")
 
                 if user.flags.startswith("1"):
 
-                    diff_result: dict = diff_to_dict(first=data, second=last_data)
                     message = build_message_custom(user_data=user.flags, message=diff_result)
 
                     self.send_message(user.chat_id, message)
