@@ -24,7 +24,7 @@ class TelegramBot:
 
         self.CMD = [
             {"keywords": ["secret", "removed", "added", "common"], "method": self.auth},
-            {"keywords": ["new"], "method": self.handle_another_commands}
+            {"keywords": ["new", "help"], "method": self.handle_another_commands}
             ]
 
     def get_updates(self, offset=None):
@@ -124,11 +124,24 @@ class TelegramBot:
         return "❌ Unknown command"
 
     def handle_another_commands(self, chat_id: int, flags: str, text: str) -> None:
-        """ ["new"] """
-        from main import BotRunner
-        bot = BotRunner()
-        bot.send_broadcast_if_due(force=True)
-        return None
+        """ ["new", "help"] """
+        if text.startswith("new"):
+            from main import BotRunner
+            bot = BotRunner()
+            bot.send_broadcast_if_due(force=True)
+            return None
+
+        elif text.startswith("help"):
+            all_keywords = []
+            for cmd in self.CMD:
+                all_keywords.extend(cmd["keywords"])
+
+            all_keywords = sorted(set(all_keywords))
+
+            keywords_str = "\n".join(all_keywords)
+
+            return keywords_str
+
 
     def auth(self, chat_id: int, flags: str, text: str) -> str:
         """ ["secret", "removed", "added", "common"] """
