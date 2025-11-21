@@ -1,5 +1,5 @@
-from datetime import datetime
 from typing import Optional
+from datetime import datetime
 from models.db import DatabaseManager
 
 class InformationDateManager:

@@ -22,7 +22,7 @@ class DatabaseManager:
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 timestamp TEXT,
                 chat_id INTEGER UNIQUE,
-                flags TEXT DEFAULT "000"
+                flags TEXT DEFAULT "0000"
             )
         ''')
 

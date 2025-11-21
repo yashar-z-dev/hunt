@@ -1,18 +1,23 @@
-# parser.add_argument("-d", "--debug", action="store_true", help="Print detailed logs")
-# parser.add_argument("-a", "--all", action="store_true", help="Include archived/disabled/private programs too")
-
+from typing import Optional
 import json
-from extract_data.process import DataExtractor, CONFIG
+from extract_data.process import DataExtractor
+from configs.browser_config import BrowserConfig
 
-def get_extracet(debug: bool, all: bool) -> str:
+def get_extracet(debug: bool, 
+                 all: bool, 
+                 config: BrowserConfig=BrowserConfig()) -> str:
+    """
+    - debug: print detailed logs
+    - all  : Include archived/disabled/private programs too
+    """
+    extractor = DataExtractor(config=config, include_all=all)
+    results: list[Optional[dict]] = extractor.extract()
 
-    extractor = DataExtractor(config=CONFIG, include_all=all)
-    results = extractor.extract()
-
-    if isinstance(results, dict) and "error" in results:
+    if results and isinstance(results[0], dict) and "error" in results[0]:
         return json.dumps(results, indent=2, ensure_ascii=False)
+
     else:
-        field_names = list(CONFIG["fields"].keys())
+        field_names = list(config.fields.keys())
         output = []
         
         if not debug:

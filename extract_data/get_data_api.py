@@ -1,16 +1,17 @@
 import requests
 import time
+from configs.browser_config import BrowserConfig
 
-def fetch_from_api(config, page=1):
+def fetch_from_api(config: BrowserConfig, page=1):
     """
     Fetch one page from API with retries, exponential backoff, and detailed error info.
     """
-    backoff = config["retry_delay"]
-    for attempt in range(1, config["max_retries"] + 1):
+    backoff = config.retry_delay
+    for attempt in range(1, config.max_retries + 1):
         try:
             response = requests.get(
-                f"{config['base_url']}&page[number]={page}",
-                timeout=config["timeout"]
+                f"{config.base_url}&page[number]={page}",
+                timeout=config.timeout
             )
             response.raise_for_status()
             return response.json()
@@ -25,7 +26,7 @@ def fetch_from_api(config, page=1):
             error_msg = f"Unexpected error on page {page}, attempt {attempt}: {e}"
 
         # retry
-        if attempt < config["max_retries"]:
+        if attempt < config.max_retries:
             time.sleep(backoff)
             backoff *= 2  # backoff
         else:

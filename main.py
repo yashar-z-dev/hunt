@@ -1,6 +1,6 @@
 from typing import Optional
 import time
-from configs.config import Config
+from configs.bot_config import BotConfig
 from models.db import DatabaseManager
 from telegram_bot.bot import UserManager
 from models.settings import SettingsManager
@@ -9,7 +9,7 @@ from telegram_bot.bot import TelegramBot
 from extract_data.main_extractor import get_extracet
 
 def main():
-    config = Config()
+    config =BotConfig()
     db_manager = DatabaseManager(config.DB_FILE)
     user_manager = UserManager(db_manager=db_manager)
     settings_manager = SettingsManager(db_manager=db_manager)
@@ -24,7 +24,7 @@ def main():
     while True:
         offset = bot.run_message_processor(offset)
 
-        data: str = get_extracet(debug=True, all=True)
+        data: str = get_extracet(debug=False, all=True)
         information_manager.add_information(data)
         last_data = information_manager.get_last_information(1)[0][2]
 

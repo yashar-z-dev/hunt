@@ -66,7 +66,7 @@ def paginate_and_display(rows, headers, rows_per_page=30, maxcolwidths=None):
         start += rows_per_page
 
 
-def parse_command(command):
+def parse_command(command: str):
     return command.strip().strip(';').split()
 
 def describe_table(table_name):

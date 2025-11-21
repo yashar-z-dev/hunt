@@ -1,6 +1,6 @@
 import os
 
-class Config:
+class BotConfig:
     def __init__(self):
         self.project_root: str = os.path.dirname(os.path.abspath(__file__))
         self.TOKEN_FILE: str = os.path.join(self.project_root, "..", "instance", "token.txt")

@@ -1,15 +1,15 @@
 import time
-from configs.config import Config
+from configs.bot_config import BotConfig
 from models.users import UserManager, User
 from models.settings import SettingsManager
 import requests
 
-from extract_data.diff_checker import diff_to_dict, build_message_custom
+from UI.diff_checker import diff_to_dict, build_message_custom
 
 class TelegramBot:
     """BOT manager"""
     def __init__(self, 
-                 config: Config, 
+                 config: BotConfig, 
                  user_manager: UserManager, 
                  settings_manager: SettingsManager):
 
