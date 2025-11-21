@@ -82,7 +82,8 @@ class TelegramBot:
                 return
 
             result = self.dispatch(chat_id=user.chat_id, flags=user.flags, text=text)
-            self.send_message(chat_id, f"{result}")
+            if result:
+                self.send_message(chat_id, f"{result}")
 
     def send_broadcast(self, data: str, last_data: str="", all=False):
         users = self.user_manager.get_all_users()
@@ -122,13 +123,14 @@ class TelegramBot:
                 return cmd["method"](chat_id=chat_id, flags=flags, text=text)
         return "❌ Unknown command"
 
-    def handle_another_commands(self, chat_id: int, flags: str, text: str):
+    def handle_another_commands(self, chat_id: int, flags: str, text: str) -> None:
         """ ["new"] """
         from main import BotRunner
         bot = BotRunner()
         bot.send_broadcast_if_due(force=True)
+        return None
 
-    def auth(self, chat_id: int, flags: str, text: str):
+    def auth(self, chat_id: int, flags: str, text: str) -> str:
         """ ["secret", "removed", "added", "common"] """
         updated_flags = list(flags)
         if text == f"secret:{self.secret}":
