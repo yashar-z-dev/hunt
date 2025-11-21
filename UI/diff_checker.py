@@ -1,4 +1,5 @@
 import difflib
+import re
 
 def diff_to_dict(first: str, second: str) -> dict:
     """Return dict with keys: removed, added, common"""
@@ -24,6 +25,13 @@ def diff_to_dict(first: str, second: str) -> dict:
 
     return result
 
+def truncate_by_space_regex(text: str, limit: int=25) -> str:
+    pattern = rf'^.{0,{limit}}(?=\s|$)'
+    match = re.search(pattern, text)
+    if match:
+        return match.group(0).strip()
+    return text[:limit]  # fallback
+
 def build_message_custom(user_data: str, message: dict) -> str:
     output_lines = []
 
@@ -43,8 +51,13 @@ def build_message_custom(user_data: str, message: dict) -> str:
                 lable = item["key"]
                 output_lines.append(f"{icon} {lable}:")
 
-                for j in message[item["key"]]:
-                    output_lines.append(j)
+                for data in message[item["key"]]:
+                    match = re.match(r'^(.*?),', data)
+                    if match:
+                        result = truncate_by_space_regex(text=match.group(1))
+                    else:
+                        result = truncate_by_space_regex(text=f"ERR: {data}")
+                    output_lines.append(result)
             
     if output_lines:
         return "\n".join(output_lines)

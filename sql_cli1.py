@@ -165,6 +165,9 @@ def handle_large_columns(rows, headers):
         print("📝 Tip: To view the full content of the hidden columns, try running:")
         print(f"   SELECT {', '.join(hidden_headers)} FROM table_name;")
 
+import re
+import datetime
+
 def select_data(command: str, 
                 output_file=None, 
                 delimiter=',', 
@@ -172,35 +175,31 @@ def select_data(command: str,
                 line_terminator='\n'):
     """Execute SELECT query and optionally save the output to a file with default parameters."""
     try:
-        # Check if the command includes 'INTO OUTFILE'
-        if 'INTO OUTFILE' in command.upper():
-            # If the command includes INTO OUTFILE, we assume the user wants to output the result to a file
+        # DETECTED INTO OUTFILE
+        if re.search(r'into\s+outfile', command, flags=re.IGNORECASE):
             if not output_file:
                 timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
-                output_file = f"query_output_{timestamp}.csv"  # Use default filename if none provided
+                output_file = f"query_output_{timestamp}.csv"
 
-            # Remove 'INTO OUTFILE' part from the SQL command for execution
-            command = command.split("INTO OUTFILE")[0].strip()
+            # Clean cammand
+            command = re.split(r'into\s+outfile.*', command, flags=re.IGNORECASE)[0].strip()
 
-            # Execute the query
+            # Execute SELECT
             cursor.execute(command)
             rows = cursor.fetchall()
             headers = [desc[0] for desc in cursor.description]
 
-            # Save to output file using the default delimiters and enclosure
+            # Save to file
             with open(output_file, 'w', encoding='utf-8') as f:
-                # Write headers
                 f.write(enclosure + delimiter.join(headers) + enclosure + line_terminator)
-
-                # Write rows
                 for row in rows:
                     wrapped_row = [str(cell) for cell in row]
                     f.write(enclosure + delimiter.join(wrapped_row) + enclosure + line_terminator)
 
-            print(f"✅ Query results saved to {output_file}")
+            print(f"✅ Query OK, results saved to {output_file}")
 
         else:
-            # Execute normal SELECT query if no INTO OUTFILE is specified
+            # Execute SELECT
             cursor.execute(command)
             rows = cursor.fetchall()
             headers = [desc[0] for desc in cursor.description]
@@ -210,37 +209,20 @@ def select_data(command: str,
                 print("\nQuery OK, 0 rows returned.")
                 return
 
-            # Calculate column widths for terminal display
+            # show in terminal
             term_width = get_terminal_width()
             col_widths = calculate_column_widths(headers)
 
-            # Wrap all rows for better formatting
             wrapped_rows = []
             for row in rows:
                 wrapped_row = [wrap_text(cell, width=col_widths[i]) for i, cell in enumerate(row)]
                 wrapped_rows.append(wrapped_row)
 
-            # Display the results on terminal
             handle_large_columns(wrapped_rows, headers)
-
-            # Optionally save output to a file (using default parameters)
-            if output_file:
-                output_file = output_file.strip()
-                if not output_file:
-                    timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
-                    output_file = f"query_output_{timestamp}.csv"
-
-                with open(output_file, 'w', encoding='utf-8') as f:
-                    # Write headers
-                    f.write(",".join(headers) + "\n")
-                    # Write rows
-                    for row in wrapped_rows:
-                        f.write(",".join(str(cell) for cell in row) + "\n")
-
-                print(f"✅ Query results saved to {output_file}")
 
     except Exception as e:
         print(f"ERROR: {e}")
+
 
 def read_multiline_sql():
     """Read multi-line SQL commands from the user until ';' is entered."""
