@@ -82,8 +82,7 @@ class TelegramBot:
                 return
 
             result = self.dispatch(chat_id=user.chat_id, flags=user.flags, text=text)
-            self.send_message(chat_id, f"{user.id}: UPDATED. {result.flags}")
-
+            self.send_message(chat_id, f"{result}")
 
     def send_broadcast(self, data: str, last_data: str="", all=False):
         users = self.user_manager.get_all_users()
