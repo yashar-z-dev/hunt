@@ -43,7 +43,7 @@ class BotRunner:
         infos: list = self.information_manager.get_last_information(1)
         last_data: str = infos[0][2] if infos else ""
 
-        data: Optional[str] = get_extracet(debug=False, all=True)
+        data: Optional[str] = get_extracet(debug=False, include_all=True)
         if data is not None: # check not ERROR
             self.information_manager.add_information(data)
             return data, last_data
