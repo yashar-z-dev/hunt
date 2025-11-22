@@ -1,23 +1,35 @@
 # build images
 ```
-docker build -t hunt:1.0 .
+docker build -t <image_name>:<image_tags> .
 ```
 
 ---
 # run
 ```
 docker run -d \
-  --name hunt \
+  --name <container_name> \
   --restart unless-stopped \
-  -v ~/hunt:/app \
-  hunt:1.0
+  -v ~/<dirctory>:/app \
+  <image_name_or_id>:<image_tags>
 ```
 
 ---
 # bash
 ```
 docker run -it --rm \
-  --name hunt-debug \
-  -v ~/hunt:/app \
-  hunt:1.0 bash
+  --name <container_name> \
+  -v ~/<dirctory>:/app \
+  <image_name_or_id>:<image_tags> bash
+```
+
+```
+docker exec -it <container_name_or_id> /bin/bash
+```
+
+```
+docker exec -it <container_name_or_id> /bin/sh
+```
+
+```
+docker exec -it --user <username_or_uid> <container_name_or_id> /bin/bash
 ```
