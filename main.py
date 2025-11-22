@@ -30,31 +30,34 @@ class BotRunner:
         self.offset = self.bot.run_message_processor(self.offset)
 
     def update_information(self) -> Tuple[str, str]:
+        """
+        Backend logic note:
+        - add_information() stores the new data into the database.
+        - get_last_information() retrieves the most recent entry from the database.
+        
+        ⚠️ The order of operations is critical:
+        We must fetch the last_data BEFORE inserting the new data.
+        Otherwise, last_data would equal the freshly added data,
+        and we would lose the actual previous record.
+        """
+        infos: list = self.information_manager.get_last_information(1)
+        last_data: str = infos[0][2] if infos else ""
+
         data: str = get_extracet(debug=False, all=True)
         self.information_manager.add_information(data)
-        last_data = self.information_manager.get_last_information(1)[0][2]
+
         return data, last_data
 
-
-    def send_broadcast_if_due(self, 
-                              data: Optional[str] = None, # dev here
-                              force: bool=False
-                              ):
+    def send_broadcast_if_due(self, data: Optional[str] = None, force: bool=False):
         now = time.time()
-        if force:
-            data, last_data = self.update_information() # update and send new data
+        if force or now - self.last_broadcast_time >= self.config.broadcast_interval:
+            self._do_broadcast()
 
-            self.bot.send_broadcast(data=data, last_data=last_data, all=False)
-            self.last_broadcast_time = now
-            print(f"✅ Broadcast sent at {datetime.datetime.now()}")
-
-        elif now - self.last_broadcast_time >= self.config.broadcast_interval:
-
-            data, last_data = self.update_information() # update and send new data
-
-            self.bot.send_broadcast(data=data, last_data=last_data, all=False)
-            self.last_broadcast_time = now
-            print(f"✅ Broadcast sent at {datetime.datetime.now()}")
+    def _do_broadcast(self):
+        data, last_data = self.update_information()
+        self.bot.send_broadcast(data=data, last_data=last_data, all=False)
+        self.last_broadcast_time = time.time()
+        print(f"✅ Broadcast sent at {datetime.datetime.now()}")
 
     def run(self):
         # Main Loop
@@ -64,7 +67,6 @@ class BotRunner:
             self.send_broadcast_if_due()
 
             time.sleep(self.config.DELAY)
-
 
 if __name__ == "__main__":
     runner = BotRunner()
