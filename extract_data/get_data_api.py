@@ -1,6 +1,7 @@
 import requests
 import time
 from configs.browser_config import BrowserConfig
+from url_utils.utills import update_url
 
 def fetch_from_api(config: BrowserConfig, page=1):
     """
@@ -9,13 +10,10 @@ def fetch_from_api(config: BrowserConfig, page=1):
     backoff = config.retry_delay
     for attempt in range(1, config.max_retries + 1):
         try:
-            response = requests.get(
-                f"{config.base_url}&page[number]={page}",
-                timeout=config.timeout
-            )
+            url = update_url(url=config.base_url, query_params={"page": page})
+            response = requests.get(url, timeout=config.timeout)
             response.raise_for_status()
             return response.json()
-
         except requests.exceptions.Timeout as e:
             error_msg = f"Timeout on page {page}, attempt {attempt}: {e}"
         except requests.exceptions.ConnectionError as e:

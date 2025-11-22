@@ -43,10 +43,12 @@ class BotRunner:
         infos: list = self.information_manager.get_last_information(1)
         last_data: str = infos[0][2] if infos else ""
 
-        data: str = get_extracet(debug=False, all=True)
-        self.information_manager.add_information(data)
+        data: Optional[str] = get_extracet(debug=False, all=True)
+        if data is not None: # check not ERROR
+            self.information_manager.add_information(data)
+            return data, last_data
 
-        return data, last_data
+        return f"ERROR when get data as api: data: {data}", "ERROR" # fallback
 
     def send_broadcast_if_due(self, data: Optional[str] = None, force: bool=False):
         now = time.time()

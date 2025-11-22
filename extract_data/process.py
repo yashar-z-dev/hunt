@@ -1,5 +1,5 @@
-from typing import Optional
 import time
+from typing import Optional
 from extract_data.validate import validate_data
 from extract_data.get_data_api import fetch_from_api
 from extract_data.get_data_browser import fetch_from_browser
@@ -46,7 +46,7 @@ def normalize_item(item, cfg_fields: dict):
 class DataExtractor:
     def __init__(self, 
                  config: BrowserConfig, 
-                 include_all: bool=False):
+                 include_all: bool=False) -> Optional[list]:
 
         self.config = config
         self.include_all = include_all
@@ -63,33 +63,37 @@ class DataExtractor:
             return browser_data
 
         # final ERRIR
-        return [{"error": "Failed to fetch valid data from both API and browser."}]
+        return None
 
-    def _fetch_all_pages(self, fetch_func):
-        """Loop through all pages using given fetch function."""
-        page = 1
+    def _fetch_all_pages(self, fetch_func) -> Optional[list]:
+        """
+        Fetch and normalize items across all pages using the given fetch function.
+        - Stops if data is invalid, empty, or no more pages.
+        - Respects rate limit between requests.
+        """
         all_items = []
+        page = 1
 
         while True:
             raw_data: Optional[dict] = fetch_func(self.config, page=page)
             if not raw_data or not validate_data(data=raw_data, rules=self.config.validation_rules):
                 break
 
-            items: list = raw_data.get("items", [])
-            pagination: dict = raw_data.get("pagination", {})
-
+            items = raw_data.get("items") or []
             if not items:
                 break
 
+            # Process items
             for item in items:
-                if not self.include_all and not is_active_bounty(item):
-                    continue
-                all_items.append(normalize_item(item=item, cfg_fields=self.config.fields))
+                if self.include_all or is_active_bounty(item):
+                    all_items.append(normalize_item(item, self.config.fields))
 
-            if page >= pagination.get("nb_pages", 1):
+            # Pagination check
+            nb_pages = raw_data.get("pagination", {}).get("nb_pages", 1)
+            if page >= nb_pages:
                 break
 
             page += 1
             time.sleep(self.config.rate_limit)
 
-        return all_items if all_items else None
+        return all_items or None

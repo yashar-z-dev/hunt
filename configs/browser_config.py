@@ -9,8 +9,14 @@ class BrowserConfig:
         self.validation_rules = self.get_validation_rules()
 
     def get_base_url(self):
-        return "https://api.yeswehack.com/programs?filter%5Btype%5D%5B%5D=bug-bounty"
-    
+        return "https://api.yeswehack.com/programs?page=3&resultsPerPage=42&filter%5Btype%5D%5B%5D=bug-bounty"
+        """
+        a = 'https://api.yeswehack.com/programs/filters-data?filter%5Btype%5D%5B%5D=bug-bounty'
+        b = 'https://api.yeswehack.com/programs?page=2&resultsPerPage=42&filter%5Btype%5D%5B%5D=bug-bounty'
+        c = 'https://api.yeswehack.com/programs/count'
+        d = "https://api.yeswehack.com/programs?page=1&resultsPerPage=100&filter%5Btype%5D%5B%5D=bug-bounty"
+        """
+
     def get_fields(self):
         return {
             "title": {"path": ["title"], "default": "N/A"},
