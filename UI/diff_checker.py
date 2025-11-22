@@ -81,6 +81,7 @@ def build_message_custom(user_data: str, message: dict) -> str:
                     output_lines.append(result)
             
     if output_lines:
-        return "\n".join(output_lines)
+        return "\n".join(f"{i}. {item}" for i, item in enumerate(output_lines, start=1))
+
     else:
         return "__NOT_CHANGE__"
