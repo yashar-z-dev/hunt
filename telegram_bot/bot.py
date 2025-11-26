@@ -3,6 +3,9 @@ from configs.bot_config import BotConfig
 from models.users import UserManager
 from models.settings import SettingsManager
 from configs.typing_utils import Command
+import logging
+
+from broadcast import Do_Broadcast
 
 class TelegramBot:
     """BOT manager"""
@@ -10,6 +13,8 @@ class TelegramBot:
                  config: BotConfig, 
                  user_manager: UserManager, 
                  settings_manager: SettingsManager):
+        
+        self.logger = logging.getLogger(self.__class__.__name__)  # Logger per class
 
         self.secret = config.SECRET
         self.user_manager = user_manager
@@ -22,23 +27,6 @@ class TelegramBot:
                     method=self.handle_another_commands)
         ]
 
-    def split_message(self, text: str, max_length: int = 4096) -> list[str]:
-        lines = text.split("\n")
-        current_message = ""
-        messages = []
-
-        for line in lines:
-            if len(current_message) + len(line) + 1 <= max_length:
-                current_message += ("\n" + line) if current_message else line
-            else:
-                messages.append(current_message)
-                current_message = line
-
-        if current_message:
-            messages.append(current_message)
-
-        return messages
-
     def dispatch(self, chat_id: int, flags: str, text: str) -> Optional[str]:
         for cmd in self.CMD:
             for keyword in cmd.keywords:
@@ -50,9 +38,12 @@ class TelegramBot:
     def handle_another_commands(self, chat_id: int, flags: str, text: str) -> Optional[str]:
         """ ["new", "help"] """
         if text.startswith("new"):
-            return "now can't exec this command."
+            self.logger.info(f"use: class Do_Broadcast in main")
+            broadcaster = Do_Broadcast()
+            broadcaster.run()
+            return None
 
-        if text.startswith("help"):
+        elif text.startswith("help"):
             all_keywords = []
             for cmd in self.CMD:
                 all_keywords.extend(cmd.keywords)

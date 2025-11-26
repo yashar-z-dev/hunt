@@ -8,11 +8,12 @@ from telegram_bot.bot import TelegramBot
 from models.settings import SettingsManager
 from models.informations import InformationDateManager
 from models.users import UserManager, User
-
-# Logger setup for class with class name
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+from UI.network_utils import split_message
 
 class BotRunner:
+    """
+    handle command with long polling and keep alive the bot with loop
+    """
     def __init__(self):
         self.logger = logging.getLogger(self.__class__.__name__)  # Logger per class
 
@@ -50,7 +51,7 @@ class BotRunner:
         big O = (self.config.LIMIT)
         """
         # split if len(text) >= 4096
-        messages: list[str] = self.bot.split_message(text)
+        messages: list[str] = split_message(text)
 
         for chunk in messages:
             url = f"{self.config.BASE_URL}/sendMessage"
@@ -119,5 +120,8 @@ class BotRunner:
             self.process_messages()
 
 if __name__ == "__main__":
+    # Logger setup for class with class name
+    logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+
     bot = BotRunner()
     bot.run()
