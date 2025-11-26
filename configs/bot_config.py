@@ -10,10 +10,11 @@ class BotConfig:
         self.TOKEN: str = self.loader(self.TOKEN_FILE).strip()
         self.SECRET: str = self.loader(self.SECRET_FILE).strip()
         self.BASE_URL: str = self.get_baseurl()
-        self.DELAY: float = 10 # main loop DELAY
-        self.broadcast_interval: float = 3600 # broadcast DELAY
-        self.TIMEOUT: float = 1 # wait for recive message
+        self.TIMEOUT: float = 60 # long polling
         self.LIMIT: float = 2 # telegram limit every minute we can send 30 message
+
+        # UI
+        self.WHEN_no_auth_replay = "You must subscribe to use this robot."
 
         self.make_dirctorys()
 
@@ -26,5 +27,6 @@ class BotConfig:
         return f"https://api.telegram.org/bot{self.TOKEN}"
 
     def make_dirctorys(self):
-        os.makedirs(os.path.join(self.project_root, "models"), exist_ok=True)
-        os.makedirs(os.path.join(self.project_root, "configs"), exist_ok=True)
+        return
+        # os.makedirs(os.path.join(self.project_root, "models"), exist_ok=True)
+        # os.makedirs(os.path.join(self.project_root, "configs"), exist_ok=True)
