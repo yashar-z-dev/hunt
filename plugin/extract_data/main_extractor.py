@@ -1,10 +1,11 @@
 from typing import Optional
+
 from extract_data.process import DataExtractor
 from configs.browser_config import BrowserConfig
 
 def get_extracet(debug: bool,
                  include_all: bool,
-                 config: BrowserConfig = BrowserConfig()) -> str:
+                 config: BrowserConfig = BrowserConfig()) -> Optional[str]:
     """
     Extract program data and format output.
 

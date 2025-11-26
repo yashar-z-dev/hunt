@@ -1,6 +1,7 @@
-from models.db import DatabaseManager
 from typing import List, Optional
 from datetime import datetime
+
+from models.db import DatabaseManager
 
 class User:
     """show one user datails"""

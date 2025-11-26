@@ -1,12 +1,13 @@
+from typing import Optional, Tuple, Callable
 import time
 import datetime
 import requests
 import logging
-from typing import Optional, Tuple, Callable
-from configs.bot_config import BotConfig
+
 from models.db import DatabaseManager
 from models.informations import InformationDateManager
 from models.users import UserManager
+from configs.bot_config import BotConfig
 from views.diff_checker import diff_to_dict, build_message_custom
 from views.network_utils import split_message
 

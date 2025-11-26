@@ -1,5 +1,5 @@
-from urllib.parse import urlparse, parse_qs, urlencode, urlunparse
 from typing import Optional
+from urllib.parse import urlparse, parse_qs, urlencode, urlunparse
 
 def update_url(
     url: str,

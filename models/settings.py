@@ -1,4 +1,5 @@
 from typing import Optional
+
 from models.db import DatabaseManager
 
 class SettingsManager:

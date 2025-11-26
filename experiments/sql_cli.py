@@ -1,9 +1,8 @@
-import os
+from tabulate import tabulate
 import sqlite3
 import re
 import shutil
 import textwrap
-from tabulate import tabulate
 import datetime
 
 # Database path
