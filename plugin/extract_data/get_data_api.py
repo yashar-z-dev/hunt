@@ -2,7 +2,7 @@ import requests
 import time
 
 from configs.browser_config import BrowserConfig
-from url_utils.utills import update_url
+from core.utills import update_url
 
 def fetch_from_api(config: BrowserConfig, page=1):
     """

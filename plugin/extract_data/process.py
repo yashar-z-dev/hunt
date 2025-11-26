@@ -1,9 +1,9 @@
 from typing import Optional
 import time
 
-from extract_data.validate import validate_data
-from extract_data.get_data_api import fetch_from_api
-from extract_data.get_data_browser import fetch_from_browser
+from plugin.extract_data.validate import validate_data
+from plugin.extract_data.get_data_api import fetch_from_api
+from plugin.extract_data.get_data_browser import fetch_from_browser
 from configs.browser_config import BrowserConfig
 
 # ==============================

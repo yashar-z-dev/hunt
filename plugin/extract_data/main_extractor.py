@@ -1,6 +1,6 @@
 from typing import Optional
 
-from extract_data.process import DataExtractor
+from plugin.extract_data.process import DataExtractor
 from configs.browser_config import BrowserConfig
 
 def get_extracet(debug: bool,
