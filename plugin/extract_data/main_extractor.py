@@ -1,5 +1,4 @@
 from typing import Optional
-import json
 from extract_data.process import DataExtractor
 from configs.browser_config import BrowserConfig
 
@@ -34,12 +33,15 @@ def get_extracet(debug: bool,
         output.append("==========================\n")
 
         for idx, program in enumerate(results, start=1):
-            values = [f"{field}: {program.get(field, '')}" for field in field_names]
-            output.append(f"{idx:02d}. " + " — ".join(values))
+            if program is not None:
+                values = [f"{field}: {program.get(field, '')}" for field in field_names]
+                output.append(f"{idx:02d}. " + " — ".join(values))
     else:
         # Normal mode: CSV-like pipeline
         for program in results:
-            values = [str(program.get(field, "")) for field in field_names]
-            output.append(",".join(values))
+            if program is not None:
+
+                values = [str(program.get(field, "")) for field in field_names]
+                output.append(",".join(values))
 
     return "\n".join(output) if output else "ERROR finally"

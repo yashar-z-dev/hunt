@@ -4,7 +4,7 @@ from datetime import datetime
 
 class User:
     """show one user datails"""
-    def __init__(self, chat_id: int, timestamp: str = None, flags: str = "0000"):
+    def __init__(self, chat_id: int, timestamp: Optional[str] = None, flags: str = "0000"):
         self.id: Optional[int] = None  # Runtime get as DB
         self.chat_id = chat_id
         self.timestamp = timestamp or datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -23,7 +23,7 @@ class UserManager:
                    VALUES (?, ?, ?)'''
         self.db_manager.execute(query, (user.timestamp, user.chat_id, user.flags))
 
-    def get_user(self, chat_id: int) -> User:
+    def get_user(self, chat_id: int) -> Optional[User]:
         query = "SELECT id, timestamp, chat_id, flags FROM users WHERE chat_id = ?"
         result = self.db_manager.fetch_one(query, (chat_id,))
         if result:

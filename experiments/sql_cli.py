@@ -7,7 +7,10 @@ from tabulate import tabulate
 import datetime
 
 # Database path
-DB_PATH = os.path.join(os.path.dirname(__file__), 'instance', 'database.db')
+from configs.bot_config import BotConfig
+config = BotConfig()
+DB_PATH = config.DB_FILE
+
 conn = sqlite3.connect(DB_PATH)
 cursor = conn.cursor()
 
@@ -154,7 +157,7 @@ def handle_large_columns(rows, headers):
 
     if show_warning:
         print(f"⚠️ Output truncated: Showing {max_cols} columns of {len(headers)}.")
-        print("📝 Tip: Use SELECT col1, col2, ... for full column view.")
+        print("📝 Tip: Use SELECT col1, col2, ... for full column views.")
 
     # Truncate the columns
     truncated_rows, truncated_headers, hidden_headers = truncate_columns(rows, headers, max_cols=max_cols)

@@ -16,8 +16,6 @@ class BotConfig:
         # UI
         self.WHEN_no_auth_replay = "You must subscribe to use this robot."
 
-        self.make_dirctorys()
-
     def loader(self, file: str) -> str:
         with open(file, "r", encoding="utf-8") as f:
             data = f.read().strip()
@@ -25,8 +23,3 @@ class BotConfig:
 
     def get_baseurl(self) -> str:
         return f"https://api.telegram.org/bot{self.TOKEN}"
-
-    def make_dirctorys(self):
-        return
-        # os.makedirs(os.path.join(self.project_root, "models"), exist_ok=True)
-        # os.makedirs(os.path.join(self.project_root, "configs"), exist_ok=True)

@@ -7,11 +7,11 @@ from configs.bot_config import BotConfig
 from models.db import DatabaseManager
 from models.informations import InformationDateManager
 from models.users import UserManager
-from UI.diff_checker import diff_to_dict, build_message_custom
-from UI.network_utils import split_message
+from views.diff_checker import diff_to_dict, build_message_custom
+from views.network_utils import split_message
 
 # yes we
-from extract_data.main_extractor import get_extracet
+from plugin.extract_data.main_extractor import get_extracet
 
 class Do_Broadcast:
     def __init__(self, 

@@ -46,19 +46,19 @@ def normalize_item(item, cfg_fields: dict):
 class DataExtractor:
     def __init__(self, 
                  config: BrowserConfig, 
-                 include_all: bool=False) -> Optional[list]:
+                 include_all: bool=False):
 
         self.config = config
         self.include_all = include_all
 
-    def extract(self) -> list:
+    def extract(self) -> Optional[list]:
         # try with API
-        api_data: Optional[list] = self._fetch_all_pages(fetch_from_api)
+        api_data = self._fetch_all_pages(fetch_from_api)
         if api_data:
             return api_data
 
         # try with browser
-        browser_data: Optional[list] = self._fetch_all_pages(fetch_from_browser)
+        browser_data = self._fetch_all_pages(fetch_from_browser)
         if browser_data:
             return browser_data
 

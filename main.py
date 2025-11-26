@@ -4,11 +4,11 @@ import logging
 from typing import Optional
 from configs.bot_config import BotConfig
 from models.db import DatabaseManager
-from telegram_bot.bot import TelegramBot
+from core.bot import TelegramBot
 from models.settings import SettingsManager
 from models.informations import InformationDateManager
 from models.users import UserManager, User
-from UI.network_utils import split_message
+from views.network_utils import split_message
 
 class BotRunner:
     """
