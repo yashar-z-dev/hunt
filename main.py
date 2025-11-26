@@ -103,17 +103,16 @@ class BotRunner:
                 return new_offset
 
         else:
-            self.ERR_HANDELER()
-            self.logger.warning("No updates received, retrying in 10 seconds.")
+            self.ERR_HANDELER("No updates received, retrying in 10 seconds.")
 
         return offset
 
     def process_messages(self):
         self.offset = self.message_processor(self.offset)
 
-    def ERR_HANDELER(self):
-        self.logger.error("Error handling, retrying in 10 seconds...")
-        time.sleep(10)
+    def ERR_HANDELER(self, msg):
+        self.logger.error(f"{msg}")
+        time.sleep(self.config.LIMIT)
 
     def run(self):
         # Main Loop

@@ -75,7 +75,6 @@ def build_message_custom(user_data: str, message: dict) -> str:
                 for data in message[item["key"]]:
                     match = re.match(r'^(.*?),', data)
                     if match:
-                        print(match.group(1))
                         result = truncate(text=match.group(1))
                     else:
                         result = truncate(text=f"ERR: {data}")
