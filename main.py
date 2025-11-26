@@ -9,18 +9,13 @@ from models.settings import SettingsManager
 from models.informations import InformationDateManager
 from models.users import UserManager, User
 
+# Logger setup for class with class name
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 class BotRunner:
     def __init__(self):
-        # Logger setup with class name dynamically
-        self.logger = logging.getLogger(self.__class__.__name__)
-        self.logger.setLevel(logging.INFO)
-        # You can add a file handler if you want logs to be written to a file.
-        handler = logging.StreamHandler()
-        formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
-        handler.setFormatter(formatter)
-        self.logger.addHandler(handler)
-    
+        self.logger = logging.getLogger(self.__class__.__name__)  # Logger per class
+
         self.config = BotConfig()
         self.db_manager = DatabaseManager(self.config.DB_FILE)
         self.user_manager = UserManager(db_manager=self.db_manager)
