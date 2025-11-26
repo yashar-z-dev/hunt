@@ -2,10 +2,10 @@ import os
 
 class BotConfig:
     def __init__(self):
-        self.project_root: str = os.path.dirname(os.path.abspath(__file__))
-        self.TOKEN_FILE: str = os.path.join(self.project_root, "..", "instance", "token.txt")
-        self.DB_FILE: str = os.path.join(self.project_root, "..", "instance", "database.db")
-        self.SECRET_FILE: str = os.path.join(self.project_root, "..", "instance", "secret.txt")
+        self.project_root: str = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
+        self.TOKEN_FILE: str = os.path.join(self.project_root, "instance", "token.txt")
+        self.DB_FILE: str = os.path.join(self.project_root, "instance", "database.db")
+        self.SECRET_FILE: str = os.path.join(self.project_root, "instance", "secret.txt")
 
         self.TOKEN: str = self.loader(self.TOKEN_FILE).strip()
         self.SECRET: str = self.loader(self.SECRET_FILE).strip()

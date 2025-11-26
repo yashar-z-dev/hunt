@@ -119,3 +119,7 @@ class BotRunner:
         # Main Loop
         while True:
             self.process_messages()
+
+if __name__ == "__main__":
+    bot = BotRunner()
+    bot.run()
