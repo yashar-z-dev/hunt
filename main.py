@@ -85,7 +85,8 @@ class BotRunner:
                 return
 
             self.logger.debug(f"user text is:\n{text}")
-            result = self.bot.dispatch(chat_id=user.chat_id, flags=user.flags, text=text)
+
+            result = self.bot.dispatch(id=user.id, chat_id=user.chat_id, timestamp=user.timestamp, flags=user.flags, text=text)
             if result:
                 self.logger.info(f"Processing result for chat_id {chat_id}")
                 self.logger.debug(f"{result}")

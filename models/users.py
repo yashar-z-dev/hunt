@@ -6,11 +6,12 @@ from models.db import DatabaseManager
 class User:
     """show one user datails"""
     def __init__(self, 
-                 chat_id: int, 
-                 id: Optional[int] = None,
-                 timestamp: Optional[str] = None, 
+                 id: int = 0,
+                 chat_id: int = 0, 
+                 timestamp: str = '', 
                  flags: str = "0000"):
-        self.id: Optional[int] = id
+    
+        self.id = id
         self.chat_id = chat_id
         self.timestamp = timestamp or datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         self.flags = flags
