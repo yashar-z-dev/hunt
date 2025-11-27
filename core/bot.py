@@ -2,7 +2,6 @@ from typing import List, Optional
 import logging
 
 from models.users import UserManager
-from models.settings import SettingsManager
 from configs.bot_config import BotConfig
 from configs.typing_utils import Command
 from core.broadcast import Do_Broadcast
@@ -11,19 +10,17 @@ class TelegramBot:
     """BOT manager"""
     def __init__(self, 
                  config: BotConfig, 
-                 user_manager: UserManager, 
-                 settings_manager: SettingsManager):
+                 user_manager: UserManager):
         
         self.logger = logging.getLogger(self.__class__.__name__)  # Logger per class
 
         self.secret = config.SECRET
         self.user_manager = user_manager
-        self.settings_manager = settings_manager
 
         self.CMD: List[Command] = [
             Command(keywords=["secret", "removed", "added", "common"], 
                     method=self.auth),
-            Command(keywords=["new", "help"], 
+            Command(keywords=["help", "new", "status"], 
                     method=self.handle_another_commands)
         ]
 
@@ -52,7 +49,20 @@ class TelegramBot:
 
             keywords_str = "\n".join(all_keywords)
             return keywords_str
-
+        
+        elif text.startswith("status"):
+            # get all users
+            users = self.user_manager.get_all_users()
+            all_users = []
+            for user in users:
+                all_users.append(f"{user.id}:")
+                all_users.append(f"{user.chat_id}")
+                all_users.append(f"{user.flags}")
+                all_users.append(f"{user.timestamp}")
+            
+            all_users_str = "\n".join(all_users)
+            return all_users_str
+        
     def auth(self, chat_id: int, flags: str, text: str) -> Optional[str]:
         """ ["secret", "removed", "added", "common"] """
         updated_flags = list(flags)

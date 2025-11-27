@@ -25,17 +25,18 @@ class BotRunner:
         self.information_manager = InformationDateManager(db_manager=self.db_manager)
         self.bot = TelegramBot(
             config=self.config,
-            user_manager=self.user_manager,
-            settings_manager=self.settings_manager
+            user_manager=self.user_manager
         )
 
         # Status
-        self.offset: Optional[int] = self.bot.settings_manager.get_offset()
+        self.offset: Optional[int] = self.settings_manager.get_offset()
 
     def get_updates(self, offset=None) -> dict:
         """
         big O = (self.config.TIMEOUT)
         """
+
+        # send requests
         url = f"{self.config.BASE_URL}/getUpdates"
         params = {'offset': offset, 'timeout': self.config.TIMEOUT}
 
@@ -43,6 +44,7 @@ class BotRunner:
             response = requests.get(url, params=params)
         except Exception as e:
             self.logger.error(f"Error while getting updates: {e}")
+            self.ERR_HANDELER() # Network Error
             return {}
 
         return response.json()
@@ -88,7 +90,7 @@ class BotRunner:
                 self.send_message(chat_id, f"{result}")
 
     def message_processor(self, offset: Optional[int]=None) -> Optional[int]:
-        updates: dict = self.get_updates(offset=offset)
+        updates = self.get_updates(offset=offset)
 
         if updates.get('result', []):
             self.process_commands(updates)
@@ -102,16 +104,12 @@ class BotRunner:
                 self.logger.info(f"Offset updated to {new_offset}")
                 return new_offset
 
-        else:
-            self.ERR_HANDELER("No updates received, retrying in 10 seconds.")
-
         return offset
 
     def process_messages(self):
         self.offset = self.message_processor(self.offset)
 
-    def ERR_HANDELER(self, msg):
-        self.logger.error(f"{msg}")
+    def ERR_HANDELER(self):
         time.sleep(self.config.LIMIT)
 
     def run(self):
