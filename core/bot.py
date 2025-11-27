@@ -17,10 +17,17 @@ class TelegramBot:
         self.secret = config.SECRET
         self.user_manager = user_manager
 
+        # self.CMD: List[Command] = [
+        #     Command(keywords=["secret", "removed", "added", "common"], 
+        #             method=self.auth),
+        #     Command(keywords=["help", "new", "status"], 
+        #             method=self.handle_another_commands)
+        # ]
+
         self.CMD: List[Command] = [
-            Command(keywords=["secret", "removed", "added", "common"], 
+            Command(keywords=["/secret", "/removed", "/added", "/common"], 
                     method=self.auth),
-            Command(keywords=["help", "new", "status"], 
+            Command(keywords=["/help", "/new", "/status"], 
                     method=self.handle_another_commands)
         ]
 

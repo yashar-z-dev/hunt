@@ -84,9 +84,11 @@ class BotRunner:
                 self.logger.info(f"New user added with chat_id {chat_id}")
                 return
 
+            self.logger.debug(f"user text is:\n{text}")
             result = self.bot.dispatch(chat_id=user.chat_id, flags=user.flags, text=text)
             if result:
-                self.logger.info(f"Processing result for chat_id {chat_id}: {result}")
+                self.logger.info(f"Processing result for chat_id {chat_id}")
+                self.logger.debug(f"{result}")
                 self.send_message(chat_id, f"{result}")
 
     def message_processor(self, offset: Optional[int]=None) -> Optional[int]:
@@ -119,7 +121,7 @@ class BotRunner:
 
 if __name__ == "__main__":
     # Logger setup for class with class name
+    # logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
     logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
-
     bot = BotRunner()
     bot.run()
